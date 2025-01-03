@@ -6,6 +6,10 @@
 #include "shared_mem.c"
 #include "threads.c"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 // Первый процесс который захватит этот семафор будет основным процессом и сможет порождать копии и писать в лог-файл, 
 // остальные процессы будут просто увеличивать значение счётчика.
 #define SEM_NAME_MASTER "/semaphore_masterr"
@@ -24,7 +28,11 @@ void* increment_thread(void* arg) {
 
     while (1) {
         increment_counter(shared_memory);
-        usleep(300 * 1000); // 300 мс
+#ifdef _WIN32
+        Sleep(300); 
+#else
+        usleep(300 * 1000); 
+#endif
     }
     return NULL;
 }
@@ -42,7 +50,11 @@ void log_counter() {
 void* log_thread(void* arg) {
     while (1) {
         log_counter();
+        #ifdef _WIN32
+        Sleep(1000); 
+#else
         sleep(1);
+#endif
     }
     return NULL;
 }

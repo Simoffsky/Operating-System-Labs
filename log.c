@@ -14,7 +14,8 @@ void time_to_str(char* buffer, size_t size) {
     time_t now = time(NULL);
     struct tm t;
 #ifdef _WIN32
-    localtime_s(&t, &now);
+    struct tm* tmp = localtime(&now);
+    t = *tmp;
 #else
     localtime_r(&now, &t);
 #endif
@@ -30,7 +31,7 @@ void do_log(const char* data) {
     }
 
     #ifdef _WIN32
-    pid_t pid = GetCurrentProcessId();
+    DWORD pid = GetCurrentProcessId();
     #else
     pid_t pid = getpid();
     #endif

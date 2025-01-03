@@ -29,6 +29,7 @@ int semaphore_signal(Semaphore* sem);
 
 
 #ifdef _WIN32
+#include <limits.h> 
 
 int semaphore_init(Semaphore* sem, const char* name, unsigned int value) {
     sem->handle = CreateSemaphoreA(NULL, value, LONG_MAX, name);

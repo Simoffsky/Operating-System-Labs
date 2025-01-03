@@ -40,18 +40,38 @@ void destroy_shared_memory(SharedMemory* memory) {
 }
 
 SharedMemory* get_shared_memory(const char* name) {
-    SharedMemory* memory = (SharedMemory*)MapViewOfFile(
-        OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, name),
-        FILE_MAP_ALL_ACCESS,
-        0, 0, sizeof(SharedMemory)
+    // Создание или открытие объекта для отображаемого файла
+    HANDLE hMapFile = CreateFileMapping(
+        INVALID_HANDLE_VALUE,    // Используем память, а не файл
+        NULL,                    // Атрибуты безопасности
+        PAGE_READWRITE,          // Права доступа
+        0,                       // Высокий порядок размера
+        SHM_SIZE,                // Размер памяти
+        name                     // Имя объекта
     );
-    if (memory == NULL) {
-        perror("Failed to access shared memory");
-        return NULL;
-    }
-    return memory;
-}
 
+    if (hMapFile == NULL) {
+        perror("CreateFileMapping failed");
+        exit(1);
+    }
+
+    // Отображение файла в память
+    void* pSharedMemory = MapViewOfFile(
+        hMapFile,                // Дескриптор объекта
+        FILE_MAP_ALL_ACCESS,     // Права доступа
+        0,                       // Смещение в старшей части
+        0,                       // Смещение в младшей части
+        SHM_SIZE                 // Размер отображаемой области
+    );
+
+    if (pSharedMemory == NULL) {
+        perror("MapViewOfFile failed");
+        CloseHandle(hMapFile);  // Закрытие дескриптора объекта отображения
+        exit(1);
+    }
+
+    return pSharedMemory;
+}
 
 
 void shmem_init_semaphore() {
