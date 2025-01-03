@@ -10,7 +10,6 @@
 #include <signal.h>
 
 
-// Кроссплатформенные типы потоков и функции
 #ifdef _WIN32
 typedef HANDLE thread_t;
 
