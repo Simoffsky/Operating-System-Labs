@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(HelloWorld LANGUAGES CXX)
+project(LibraryProject LANGUAGES C)
 
-add_executable(hello_world main.cpp)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-target_compile_options(hello_world PRIVATE -Wall -Wextra -pedantic)
+add_subdirectory(library)
 
-install(TARGETS hello_world
-        RUNTIME DESTINATION bin)
+set(EXAMPLE_NAME example)
+add_executable(${EXAMPLE_NAME} example.c)
+
+target_link_libraries(${EXAMPLE_NAME} PRIVATE library)
