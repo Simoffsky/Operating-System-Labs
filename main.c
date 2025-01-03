@@ -30,11 +30,8 @@ void* increment_thread(void* arg) {
 }
 
 // Функция для записи времени и значения счётчика в лог
-void log_counter(sem_t* sem) {
-    sem_wait(sem);
+void log_counter() {
     int counter_val = get_counter(shared_memory);
-    sem_post(sem);
-
     char buf[64];
 
     snprintf(buf, sizeof(buf), "Counter value: %d", counter_val);
@@ -43,14 +40,8 @@ void log_counter(sem_t* sem) {
 
 // Поток, записывающий значение счётчика в лог каждую секунду
 void* log_thread(void* arg) {
-    sem_t *sem = sem_open(SEM_NAME_COUNTER, O_CREAT, 0666, 1);
-    if (sem == SEM_FAILED) {
-        perror("sem_open");
-        exit(1);
-    }
-
     while (1) {
-        log_counter(sem);
+        log_counter();
         sleep(1);
     }
     return NULL;
