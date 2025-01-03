@@ -1,10 +1,8 @@
 #!/bin/bash
 
-set -e
-
 PROJECT_DIR=$(pwd)
 
-echo "Обновление исходников из Git..."
+echo "Updating git project"
 git pull
 
 
@@ -15,8 +13,8 @@ fi
 
 cd "$BUILD_DIR"
 
-echo "Сборка проекта..."
+echo "Building project..."
 cmake ..
 cmake --build .
 
-echo "Сборка завершена. Исполняемый файл находится в папке $BUILD_DIR."
+echo "Build succeeded, builded project in $BUILD_DIR."
