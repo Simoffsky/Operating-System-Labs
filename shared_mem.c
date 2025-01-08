@@ -22,6 +22,7 @@ typedef struct {
 void destroy_shared_memory(SharedMemory* memory);
 SharedMemory* get_shared_memory(const char* name);
 int get_counter(SharedMemory* memory);
+void set_counter(SharedMemory* memory, int value);
 void increment_counter(SharedMemory* memory);
 
 void shmem_init_semaphore();
@@ -151,6 +152,12 @@ int get_counter(SharedMemory* memory) {
     shmem_signal_semaphore();
 
     return counter_value;
+}
+
+void set_counter(SharedMemory* memory, int value) {
+    shmem_wait_semaphore();
+    memory->counter = value;
+    shmem_signal_semaphore();
 }
 
 void increment_counter(SharedMemory* memory) {

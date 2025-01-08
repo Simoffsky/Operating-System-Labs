@@ -12,14 +12,14 @@
 
 // Первый процесс который захватит этот семафор будет основным процессом и сможет порождать копии и писать в лог-файл, 
 // остальные процессы будут просто увеличивать значение счётчика.
-#define SEM_NAME_MASTER "/semaphore_masterr"
+#define SEM_NAME_MASTER "/semaphore_master"
 Semaphore *sem_master;
 
-// Нужен для синхронизации записи в разделяемую память (обновление счётчика должно быть атомарным).
+// Нужен для синхронизации записи в разделяемую память (потому что обновление счётчика должно быть атомарным).
 #define SEM_NAME_COUNTER "/semaphore_counter"
 
 
-// Замаппленный с разделяемой памяти счётчик, общий на все процессы.
+// Замаппленный с разделяемой памятью счётчик, общий на все процессы.
 SharedMemory *shared_memory;
 
 
@@ -59,6 +59,22 @@ void* log_thread(void* arg) {
     return NULL;
 }
 
+// Поток, обрабатывающий пользовательский ввод
+void* input_thread(void* arg) {
+    int new_value;
+    while (1) {
+        printf("Enter a new counter value: ");
+        if (scanf("%d", &new_value) == 1) {
+            set_counter(shared_memory, new_value);
+            printf("Counter updated to %d\n", new_value);
+        } else {
+            printf("Invalid input. Please enter an integer.\n");
+            while (getchar() != '\n');
+        }
+    }
+    return NULL;
+}
+
 
 
 // handle_signal обрабатывает сигнал прерывания (ctrl + c)
@@ -77,12 +93,13 @@ void handle_signal(int sig) {
     exit(0);  
 }
 
+
+
 int main() {
-    thread_t inc_thread, logger_thread;
+    thread_t inc_thread, logger_thread, inp_thread;
 
     shmem_init_semaphore();
 
-    // Создаем или получаем разделяемую память
     shared_memory = get_shared_memory(SHM_NAME);
     if (shared_memory == NULL) {
         perror("get_shared_memory");
@@ -90,9 +107,13 @@ int main() {
     }
 
 
-    // Создаем поток для инкремента
     if (thread_create(&inc_thread, increment_thread, NULL) != 0) {
         perror("increment_thread");
+        return 1;
+    }
+
+    if (thread_create(&inp_thread, input_thread, NULL) != 0) {
+        perror("input_thread");
         return 1;
     }
 
@@ -117,6 +138,7 @@ int main() {
 
     // Ожидание завершения потоков
     thread_join(inc_thread);
+    thread_join(inp_thread);
     thread_join(logger_thread);
     return 0;
 }
