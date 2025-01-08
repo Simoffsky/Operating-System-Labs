@@ -168,8 +168,6 @@ void increment_counter(SharedMemory* memory) {
 
 void set_zero_shared_memory(SharedMemory* memory) {
     shmem_wait_semaphore();
-
     memset(memory, 0, sizeof(SharedMemory));
-
     shmem_signal_semaphore();
 }

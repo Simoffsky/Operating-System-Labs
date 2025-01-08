@@ -2,24 +2,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+#include <sys/time.h>  
 #ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
 #endif
 
-// Кроссплатформенная функция получения текущего времени в строковом формате
+// Кроссплатформенная функция получения текущего времени в строковом формате с миллисекундами
 void time_to_str(char* buffer, size_t size) {
-    time_t now = time(NULL);
+    struct timeval tv;
     struct tm t;
+    
 #ifdef _WIN32
-    struct tm* tmp = localtime(&now);
-    t = *tmp;
+    SYSTEMTIME st;
+    GetSystemTime(&st);
+
+    int milliseconds = st.wMilliseconds;
+    t.tm_year = st.wYear - 1900;
+    t.tm_mon = st.wMonth - 1;
+    t.tm_mday = st.wDay;
+    t.tm_hour = st.wHour;
+    t.tm_min = st.wMinute;
+    t.tm_sec = st.wSecond;
+    t.tm_isdst = -1;
 #else
-    localtime_r(&now, &t);
+    gettimeofday(&tv, NULL);
+    localtime_r(&tv.tv_sec, &t);
+    int milliseconds = tv.tv_usec / 1000;
 #endif
+
     strftime(buffer, size, "%Y-%m-%d %H:%M:%S", &t);
+    snprintf(buffer + strlen(buffer), size - strlen(buffer), ".%03d", milliseconds);
 }
 
 // Функция логирования
