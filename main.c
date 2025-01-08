@@ -95,7 +95,7 @@ void handle_signal(int sig) {
     exit(0);  
 }
 
-pid_t create_copy(char* param) {
+int create_copy(char* param) {
 #ifdef _WIN32
     char program_path[MAX_PATH];
     if (GetModuleFileName(NULL, program_path, MAX_PATH) == 0) {
@@ -134,7 +134,7 @@ pid_t create_copy(char* param) {
     return pi.dwProcessId;
 
 #else
-    pid_t pid = fork();
+    int pid = fork();
     if (pid == 0) {
         char *new_argv[] = {program_path, param, NULL};
         execv(program_path, new_argv);
@@ -148,8 +148,8 @@ pid_t create_copy(char* param) {
 
 
 void* copies_thread(void* arg) {
-    pid_t copy_1_pid = 0;
-    pid_t copy_2_pid = 0;
+    int copy_1_pid = 0;
+    int copy_2_pid = 0;
 
     while(1) {
         if (copy_1_pid == 0) 

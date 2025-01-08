@@ -28,6 +28,21 @@ void thread_exit() {
     ExitThread(0);
 }
 
+int check_process_finished(int pid) {
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+    if (hProcess == NULL) {
+        return 1;  
+    }
+
+    DWORD exitCode;
+    if (GetExitCodeProcess(hProcess, &exitCode)) {
+        CloseHandle(hProcess);
+        return (exitCode == STILL_ACTIVE) ? 0 : 1;  
+    }
+    CloseHandle(hProcess);
+    return 1;  // В случае ошибки возвращаем 1
+}
+
 #else // POSIX
 typedef pthread_t thread_t;
 #include <sys/wait.h>
@@ -44,23 +59,9 @@ void thread_exit() {
 }
 
 // check_process_finished возвращает 1 если процесс завершён, иначе 0
-int check_process_finished(pid_t pid) {
-#ifdef _WIN32
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
-    if (hProcess == NULL) {
-        return 1;  
-    }
-
-    DWORD exitCode;
-    if (GetExitCodeProcess(hProcess, &exitCode)) {
-        CloseHandle(hProcess);
-        return (exitCode == STILL_ACTIVE) ? 0 : 1;  
-    }
-    CloseHandle(hProcess);
-    return 1;  // В случае ошибки возвращаем 1
-#else
+int check_process_finished(int pid) {
     int status;
-    pid_t result = waitpid(pid, &status, WNOHANG);
+    int result = waitpid(pid, &status, WNOHANG);
 
     if (result == 0) 
         return 0;
@@ -70,7 +71,6 @@ int check_process_finished(pid_t pid) {
     perror("waitpid");
     return -1;
 
-#endif // _WIN32
 }
 #endif // _WIN32
 

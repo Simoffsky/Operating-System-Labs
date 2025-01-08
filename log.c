@@ -45,9 +45,9 @@ void do_log(const char* data) {
     }
 
     #ifdef _WIN32
-    DWORD pid = GetCurrentProcessId();
+    int pid = GetCurrentProcessId();
     #else
-    pid_t pid = getpid();
+    int pid = getpid();
     #endif
     
     char time_buf[64];
@@ -55,6 +55,6 @@ void do_log(const char* data) {
 
     // Форматируем и записываем в лог
     fprintf(file, "[%d] %s: %s\n", pid, time_buf, data);
-
+    fflush(file);
     fclose(file);
 }
