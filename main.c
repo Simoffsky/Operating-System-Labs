@@ -91,6 +91,8 @@ void handle_signal(int sig) {
     exit(0);  
 }
 
+// create_copy создаёт копию программы с переданным параметром.
+// Валидными параметрами являются либо --copy1 либо --copy2.
 int create_copy(char* param) {
 #ifdef _WIN32
     char program_path[MAX_PATH];
@@ -143,6 +145,7 @@ int create_copy(char* param) {
 }
 
 
+// copies_thread является потоком который создаёт 2 копии с разными параметрами (--copy1 и --copy2).
 void* copies_thread(void* arg) {
     int copy_1_pid = 0;
     int copy_2_pid = 0;
@@ -171,6 +174,7 @@ void* copies_thread(void* arg) {
     }
 }
 
+// handle_copy_1 обрабатывает копию 1
 void handle_copy_1() {
     do_log("(Copy1) Started");
     shmem_wait_semaphore();
@@ -181,6 +185,7 @@ void handle_copy_1() {
     exit(0);
 }
 
+// handle_copy_2 обрабатывает копию 2
 void handle_copy_2() {
     do_log("(Copy2) Started");
     shmem_wait_semaphore();
