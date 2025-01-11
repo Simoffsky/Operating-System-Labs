@@ -15,10 +15,6 @@
 #define SEM_NAME_MASTER "/semaphore_master"
 Semaphore *sem_master;
 
-// Нужен для синхронизации записи в разделяемую память (потому что обновление счётчика должно быть атомарным).
-#define SEM_NAME_COUNTER "/semaphore_counter"
-
-
 // Замаппленный с разделяемой памятью счётчик, общий на все процессы.
 SharedMemory *shared_memory;
 
