@@ -85,7 +85,6 @@ int write_com(HANDLE hSerial, const char* data) {
         printf("Error writing to COM port\n");
         return -1;
     }
-    printf("Data sent: %s\n", data);
     return bytesWritten;
 }
 #else //Unix

@@ -3,6 +3,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define DAY_IN_SECONDS 86400
 #define YEAR_IN_SECONDS 31536000
@@ -14,10 +17,6 @@ typedef struct {
     float temperature;
 } Measurement;
 
-// Функция для получения рандомной температуры.
-float get_current_temperature_rnd() {
-    return 20.0 + (rand() % 100) / 10.0; // Температура от 20.0 до 30.0
-}
 
 // Функция для записи измерений в лог
 void write_to_log(const char *filename, const Measurement *measurement) {
@@ -117,11 +116,13 @@ void record_temperature(float temperature) {
 }
 
 int main() {
+
+
     srand(time(NULL));
     float temperature;
     while (1) {
         record_temperature(get_current_temperature_rnd());
-        sleep(1); 
+        sleep(60); 
     }
 
     return 0;
