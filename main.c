@@ -14,14 +14,8 @@ int main() {
 #endif 
     // Настройка COM портов
     portRead = setup_com_port(portReadName);
-    if (portRead == -1) {
-        return 1;
-    }
 
     portWrite = setup_com_port(portWriteName);
-    if (portWrite == -1) {
-        return 1;
-    }
 
     char buffer[128];
     const char* dataToSend = "Hello, COM!";

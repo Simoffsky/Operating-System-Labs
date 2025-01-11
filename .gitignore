@@ -1,3 +1,5 @@
 build/
 .vscode
 log.txt
+a.exe
+a.outs
