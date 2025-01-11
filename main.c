@@ -1,37 +1,37 @@
 #include "com.c"
 
 int main() {
-    void* portRead;
-    void* portWrite;
 #ifdef _WIN32
+    HANDLE portRead;
+    HANDLE portWrite;
     const char* portReadName = "COM1"; 
     const char* portWriteName = "COM2"; 
 #else
-    const char* portReadName = "/dev/ttyS0";  
-    const char* portWriteName = "/dev/ttyS1"; 
+    int portRead;
+    int portWrite;
+    const char* portReadName = "/dev/pts/7";  
+    const char* portWriteName = "/dev/pts/8"; 
 #endif 
     // Настройка COM портов
     portRead = setup_com_port(portReadName);
-    if (portRead == NULL) {
+    if (portRead == -1) {
         return 1;
     }
 
     portWrite = setup_com_port(portWriteName);
-    if (portWrite == NULL) {
+    if (portWrite == -1) {
         return 1;
     }
 
-    // Бесконечный цикл чтения и записи
     char buffer[128];
     const char* dataToSend = "Hello, COM!";
     while (1) {
-        // Чтение данных
-        read_com(portRead, buffer, sizeof(buffer));
 
-        // Запись данных
         write_com(portWrite, dataToSend);
 
-        sleep(1);  // Пауза между операциями
+        read_com(portRead, buffer, sizeof(buffer));
+        printf("readed: %s\n", buffer);
+        sleep(1); 
     }
 
     // Закрытие портов
@@ -39,8 +39,8 @@ int main() {
         CloseHandle(portRead);
         CloseHandle(portWrite);
     #else
-        close((int)(intptr_t)portRead);
-        close((int)(intptr_t)portWrite);
+        close(portRead);
+        close(portWrite);
     #endif
 
     return 0;
