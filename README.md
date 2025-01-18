@@ -27,8 +27,8 @@ flowchart LR
     class DB_Filler,HTTP_Server service
     class MariaDB database
 
-    classDef service fill:#f9c,stroke:#333,stroke-width:2px
-    classDef database fill:#80c9d3,stroke:#333,stroke-width:2px
+    classDef service stroke:#333,stroke-width:2px
+    classDef database stroke:#333,stroke-width:2px
 ```
 
 
