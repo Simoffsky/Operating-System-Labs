@@ -18,12 +18,15 @@ flowchart LR
     COM_Port_Emulator --> DB_Filler
     DB_Filler --> MariaDB
     MariaDB --> HTTP_Server
+    HTTP_Server --> Frontend
 
-    class DB_Filler, HTTP_Server, service
+    class DB_Filler,HTTP_Server service
     class MariaDB database
+    class Frontend client
 
     classDef service stroke:#333,stroke-width:2px
     classDef database stroke:#333,stroke-width:2px
+    classDef client stroke:#333,stroke-width:2px
 ```
 
 
