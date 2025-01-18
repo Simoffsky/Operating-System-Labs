@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>График температур</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>График температур</h1>
+
+    <div class="input-group">
+        <label for="start">Начало:</label>
+        <input type="datetime-local" id="start" required>
+    </div>
+    <div class="input-group">
+        <label for="end">Конец:</label>
+        <input type="datetime-local" id="end" required>
+    </div>
+    <button onclick="fetchData()">Построить график</button>
+
+    <canvas id="temperatureChart"></canvas>
+
+    <p id="average"></p>
+</div>
+
+</body>
+</html>

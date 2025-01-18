@@ -46,27 +46,55 @@ HANDLE setup_com_port(const char* port_name) {
         return INVALID_HANDLE_VALUE;
     }
 
-    return hSerial;  // Возвращаем дескриптор порта
+    return hSerial; 
 }
 
 int read_com(HANDLE hSerial, char* buffer, DWORD bufferSize) {
     DWORD bytesRead;
-    if (!ReadFile(hSerial, buffer, bufferSize - 1, &bytesRead, NULL)) {
-        printf("Error reading from COM port\n");
-        return -1;
+    int index = 0;
+    char ch;
+    int reading = 0;
+    
+    while (1) {
+        if (!ReadFile(hSerial, &ch, 1, &bytesRead, NULL) || bytesRead == 0) {
+            printf("Error reading from COM port\n");
+            return -1;
+        }
+
+        if (ch == '$' && !reading) {
+            reading = 1;
+            continue;
+        }
+
+        if (reading) {
+            buffer[index++] = ch;
+
+            if (ch == '%') {
+                buffer[index] = '\0'; 
+                return index;
+            }
+
+           
+            if (index >= bufferSize - 1) {
+                buffer[index] = '\0'; 
+                return index;
+            }
+        }
     }
-    buffer[bytesRead] = '\0';  // Завершающий ноль для строки
-    printf("Bytes Read: %d\n", bytesRead);
-    printf("Data received: %s\n", buffer);
-    return bytesRead;
+
+    return 0;
 }
 
 int write_com(HANDLE hSerial, const char* data) {
     DWORD bytesWritten;
-    if (!WriteFile(hSerial, data, strlen(data), &bytesWritten, NULL)) {
+    char wrappedData[strlen(data) + 3];  
+    snprintf(wrappedData, sizeof(wrappedData), "$%s%%", data);
+
+    if (!WriteFile(hSerial, wrappedData, strlen(wrappedData), &bytesWritten, NULL)) {
         printf("Error writing to COM port\n");
         return -1;
     }
+    printf("Data sent: %s\n", wrappedData);
     return bytesWritten;
 }
 #else // Unix
@@ -107,23 +135,54 @@ int setup_com_port(const char* port_name) {
 
 // Чтение из порта
 int read_com(int fd, char* buffer, size_t bufferSize) {
-    int bytesRead = read(fd, buffer, bufferSize - 1);
-    if (bytesRead < 0) {
-        perror("Error reading from serial port");
-        return -1;
+    int bytesRead = 0;
+    int index = 0;
+    char ch;
+    int reading = 0;
+
+    while (1) {
+        bytesRead = read(fd, &ch, 1);
+        if (bytesRead < 0) {
+            perror("Error reading from serial port");
+            return -1;
+        }
+
+        if (ch == '$' && !reading) {
+            reading = 1;
+            continue;
+        }
+
+        if (reading) {
+            buffer[index++] = ch;
+
+
+            if (ch == '%') {
+                buffer[index] = '\0';  
+                return index;
+            }
+
+
+            if (index >= bufferSize - 1) {
+                buffer[index] = '\0'; 
+                return index;
+            }
+        }
     }
-    buffer[bytesRead] = '\0'; 
-    return bytesRead;
+
+    return 0; 
 }
 
 // Запись в порт
 int write_com(int fd, const char* data) {
-    int bytesWritten = write(fd, data, strlen(data));
+    char wrappedData[strlen(data) + 3]; 
+    snprintf(wrappedData, sizeof(wrappedData), "$%s%%", data);
+
+    int bytesWritten = write(fd, wrappedData, strlen(wrappedData));
     if (bytesWritten < 0) {
         perror("Error writing to serial port");
         return -1;
     }
-    printf("Data sent: %s\n", data);
+    printf("Data sent: %s\n", wrappedData);
     return bytesWritten;
 }
 
