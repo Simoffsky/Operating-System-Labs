@@ -1,5 +1,6 @@
-#include "com.c"
-
+#include "com.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 // Функция для получения рандомной температуры.
 float get_current_temperature_rnd() {
@@ -13,7 +14,7 @@ int main() {
     const char* portWriteName = "COM2"; 
 #else
     int portWrite;
-    const char* portWriteName = "/dev/pts/8"; 
+    const char* portWriteName = "/dev/pts/5"; 
 #endif 
     portWrite = setup_com_port(portWriteName);
 

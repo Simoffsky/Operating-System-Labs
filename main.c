@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include "com.c"
+#include "com.h"
 
 #define DAY_IN_SECONDS 86400
 #define YEAR_IN_SECONDS 31536000
@@ -117,7 +117,7 @@ int main() {
     const char* portReadName = "COM1"; 
 #else
     int portRead;
-    const char* portReadName = "/dev/pts/7"; 
+    const char* portReadName = "/dev/pts/6"; 
 #endif 
     portRead = setup_com_port(portReadName);
     srand(time(NULL));
