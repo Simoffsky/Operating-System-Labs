@@ -18,19 +18,21 @@ TODO:!!!
 
 ### Архитектура
 Для реализации текущей лабораторной было принято решение использовать современную [микросервисную](https://en.wikipedia.org/wiki/Microservices) архитектуру при проектировании решения.
+
 ```mermaid
 flowchart TB
-    DB_Filler <--> COM_Port_Emulator;
-    DB_Filler --> MariaDB;
+    DB_Filler --> COM_Port_Emulator
+    DB_Filler --> MariaDB
 
-    HTTP_Server <-- MariaDB;
+    HTTP_Server --> MariaDB
     
-    class DB_Filler,HTTP_Server database;
-    class MariaDB database;
+    class DB_Filler,HTTP_Server service
+    class MariaDB database
     
-    classDef database fill:#f00,stroke:#333,stroke-width:4px;
-
+    classDef service fill:#f96,stroke:#333,stroke-width:2px
+    classDef database fill:#f00,stroke:#333,stroke-width:4px
 ```
+
 #### DB Filler
 Первый микросервис ([db_filler](db_filler.c)) занимается чтением текущей температуры из `COM`-порта и записью данных в БД.
 
