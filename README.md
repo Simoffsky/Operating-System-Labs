@@ -18,9 +18,8 @@ flowchart LR
     COM_Port_Emulator --> DB_Filler
     DB_Filler --> MariaDB
     MariaDB --> HTTP_Server
-    HTTP_Server <--> Frontend
 
-    class DB_Filler, HTTP_Server, Frontend service
+    class DB_Filler, HTTP_Server, service
     class MariaDB database
 
     classDef service stroke:#333,stroke-width:2px
@@ -43,8 +42,7 @@ flowchart LR
 
 **Логика обработки запроса**
 
-- Если запрос не начинается с GET /data?, возвращается ошибка с кодом 400 Bad Request и сообщением "Invalid Endpoint".
-- Если запрос не начинается с GET /data?, возвращается ошибка с кодом 400 Bad Request и сообщением "Invalid Endpoint".
+- Если запрос не начинается с GET /data? либо некорректные `query`-параметры то возвращается ошибка с кодом 400 Bad Request и сообщением.
 - Если данные успешно получены, формируется ответ с кодом 200 OK и возвращается JSON-объект с результатами.
 
 **Пример ответа**
